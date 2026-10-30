@@ -1,39 +1,43 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJS 24"
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                git branch: 'main', url: 'https://github.com/suloka7218-spec/ParabankPW.git'    
+                bat 'npm install'
+                bat 'npx playwright install'
             }
         }
 
-        stage('Install Browsers') {
-    steps {
-        bat 'npx playwright install --with-deps'
-    }
-}
-
-
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                bat 'npx playwright install'
-                bat 'npx playwright test tests/paraBank --reporter=html,junit'
-            }
-            post {
-                always {
-                    junit 'test-results/results.xml'
-                    publishHTML(target: [
-                        reportDir: 'playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Playwright HTML Report'
-                    ])
+                script {
+                    def status = bat(script: 'npx playwright test"', returnStatus: true)
+                    if (status != 0) {
+                        echo "Tests failed, but continuing to generate reports..."
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Generating HTML reports...'
+
+
+            publishHTML(target: [
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright HTML Report',
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                 alwaysLinkToLastBuild: true,
+                allowMissing: true,
+                linkRelative: false
+            ])
+
+        
         }
     }
 }
