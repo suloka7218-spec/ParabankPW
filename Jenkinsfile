@@ -20,7 +20,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'npx playwright test --reporter=html,junit'
+                bat 'npx playwright test tests/paraBank --reporter=html,junit'
             }
             post {
                 always {
@@ -28,7 +28,7 @@ pipeline {
                     publishHTML(target: [
                         reportDir: 'playwright-report',
                         reportFiles: 'index.html',
-                        reportName: 'Playwright Report'
+                        reportName: 'Playwright HTML Report'
                     ])
                 }
             }
