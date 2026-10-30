@@ -1,29 +1,36 @@
 pipeline {
     agent any
+
+    tools {
+        nodejs "NodeJS 24"
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/suloka7218-spec/ParabankPW.git'    
             }
         }
-        stage('Install Dependencies') {
+
+        stage('Install') {
             steps {
                 bat 'npm ci'
-                bat 'npx playwright install --with-deps'
             }
         }
-        stage('Run Playwright Tests') {
+
+        stage('Test') {
             steps {
-                bat 'npx playwright test --reporter=dot'
+                bat 'npx playwright test --reporter=html,junit'
             }
-        }
-        stage('Publish Report') {
-            steps {
-                publishHTML(target: [
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright Report'
-                ])
+            post {
+                always {
+                    junit 'test-results/*.xml'
+                    publishHTML(target: [
+                        reportDir: 'playwright-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Playwright Report'
+                    ])
+                }
             }
         }
     }
