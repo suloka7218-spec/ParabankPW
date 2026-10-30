@@ -26,7 +26,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'test-results/*.xml'
+                    junit 'test-results/results.xml'
                     publishHTML(target: [
                         reportDir: 'playwright-report',
                         reportFiles: 'index.html',
