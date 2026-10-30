@@ -59,5 +59,5 @@ test("@smoke @regression", async({page})=>{
      await updateConactInfo.upProfileBtn.click()
       
      await expect(updateConactInfo.succMsg).toContainText("Profile Updated")
-     await page.waitForTimeout(6000)
+     //await page.waitForTimeout(6000)
 })
