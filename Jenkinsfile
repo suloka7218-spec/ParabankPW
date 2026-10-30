@@ -12,14 +12,16 @@ pipeline {
             }
         }
 
-        stage('Install') {
-            steps {
-                bat 'npm ci'
-            }
-        }
+        stage('Install Browsers') {
+    steps {
+        bat 'npx playwright install --with-deps'
+    }
+}
+
 
         stage('Test') {
             steps {
+                bat 'npx playwright install'
                 bat 'npx playwright test tests/paraBank --reporter=html,junit'
             }
             post {
